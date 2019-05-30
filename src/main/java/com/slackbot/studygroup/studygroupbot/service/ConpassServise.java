@@ -54,7 +54,7 @@ public class ConpassServise {
         for (ConnpassResponse.Events e : events) {
             try {
                 System.out.println(createTextData(e));
-//                postToSlack(createTextData(e));
+                postToSlack(createTextData(e));
             } catch (Exception err) {
 
             }
