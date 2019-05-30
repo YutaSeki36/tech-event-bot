@@ -42,7 +42,7 @@ public class ConpassServise {
         calendar.setTime(now);
 
         // 現在より15分前を定義
-        calendar.add(Calendar.MINUTE, -15);
+        calendar.add(Calendar.MINUTE, -10);
 
         // streamで最新情報のみに絞り込み
         connpassRepository.getConnpassResponse().getEvents()
