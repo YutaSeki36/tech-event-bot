@@ -18,6 +18,7 @@ public class ConnpassRepository {
 
         return UriComponentsBuilder.fromHttpUrl("https://connpass.com/api/v1/event")
                 .queryParam("keyword", "tokyo")
+                .queryParam("order", 1)
                 .queryParam("count", 1000).toUriString();
     }
 }
