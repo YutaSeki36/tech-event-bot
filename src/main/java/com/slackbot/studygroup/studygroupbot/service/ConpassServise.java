@@ -79,7 +79,7 @@ public class ConpassServise {
         ObjectMapper mapper = new ObjectMapper();
 
         String json = mapper.writeValueAsString(SlackPostObject.builder()
-                .channel("#bot_test")
+                .channel("#event-info")
                 .username("宇垣美里")
                 .text("新しい勉強会の情報だよ :heart: "
                         + LINE_SEPARATOR
