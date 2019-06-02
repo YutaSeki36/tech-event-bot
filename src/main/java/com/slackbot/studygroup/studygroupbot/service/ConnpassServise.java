@@ -67,13 +67,13 @@ public class ConnpassServise {
                 // 新しい勉強会情報か更新された勉強会情報かを判別
                 if (addedStudygroupIds.contains(e.getEvent_id())) {
 
-                    postToSlack(createTextData(e, "勉強の情報が更新されたよ"));
+                    postToSlack(createTextData(e, "勉強の情報が更新されたよ :two_hearts:"));
                 } else {
 
                     StudyGroup studyGroup = StudyGroup.builder().sgId(e.getEvent_id()).build();
                     studyGroupRepository.save(studyGroup);
 
-                    postToSlack(createTextData(e, "新しい勉強の情報だよ"));
+                    postToSlack(createTextData(e, "新しい勉強の情報だよ :heart:"));
                 }
             } catch (Exception err) {
 
@@ -101,7 +101,7 @@ public class ConnpassServise {
         String json = mapper.writeValueAsString(SlackPostObject.builder()
                 .channel("#event-info")
                 .username("宇垣美里")
-                .text(headingText + " :heart: "
+                .text(  headingText
                         + LINE_SEPARATOR
                         + "タイトル: " + events.getTitle()
                         + LINE_SEPARATOR
