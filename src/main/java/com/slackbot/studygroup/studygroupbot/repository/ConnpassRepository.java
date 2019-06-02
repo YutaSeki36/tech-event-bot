@@ -1,4 +1,4 @@
-package com.slackbot.studygroup.studygroupbot.Repository;
+package com.slackbot.studygroup.studygroupbot.repository;
 
 import com.slackbot.studygroup.studygroupbot.domain.ConnpassResponse;
 import org.springframework.stereotype.Component;
