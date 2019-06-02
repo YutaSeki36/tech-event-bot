@@ -48,14 +48,12 @@ public class ConnpassServise {
                         .map(e -> e.getSgId())
                         .collect(Collectors.toList());
 
-        System.out.println("ids: " + addedStudygroupIds);
-
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
 
         // 現在より15分前を定義
-        calendar.add(Calendar.MINUTE, -10000);
+        calendar.add(Calendar.MINUTE, -10);
 
         // streamで最新情報のみに絞り込み
         connpassRepository.getConnpassResponse().getEvents()
@@ -103,7 +101,7 @@ public class ConnpassServise {
         String json = mapper.writeValueAsString(SlackPostObject.builder()
                 .channel("#event-info")
                 .username("宇垣美里")
-                .text( headingText + " :heart: "
+                .text(headingText + " :heart: "
                         + LINE_SEPARATOR
                         + "タイトル: " + events.getTitle()
                         + LINE_SEPARATOR
