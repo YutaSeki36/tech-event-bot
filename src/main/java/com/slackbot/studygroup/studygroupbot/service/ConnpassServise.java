@@ -67,13 +67,13 @@ public class ConnpassServise {
                 // 新しい勉強会情報か更新された勉強会情報かを判別
                 if (addedStudygroupIds.contains(e.getEvent_id())) {
 
-                    postToSlack(createTextData(e, "勉強の情報が更新されたよ :two_hearts:"));
+                    postToSlack(createTextData(e, "勉強会の情報が更新されたよ :two_hearts:"));
                 } else {
 
                     StudyGroup studyGroup = StudyGroup.builder().sgId(e.getEvent_id()).build();
                     studyGroupRepository.save(studyGroup);
 
-                    postToSlack(createTextData(e, "新しい勉強の情報だよ :heart:"));
+                    postToSlack(createTextData(e, "新しい勉強会の情報だよ :heart:"));
                 }
             } catch (Exception err) {
 
