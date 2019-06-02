@@ -38,6 +38,10 @@ public class ConnpassServise {
     private String endpoint;
 
 
+    /**
+     * connpassから勉強会情報を取得してslackに投稿するメソッド
+     * @return 取得した勉強会情報(絞り込み前)
+     */
     public ConnpassResponse postConnpassInfo() {
 
         List<ConnpassResponse.Events> events = new ArrayList<>();
@@ -49,6 +53,7 @@ public class ConnpassServise {
                         .collect(Collectors.toList());
 
         Date now = new Date();
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
 
@@ -83,6 +88,11 @@ public class ConnpassServise {
         return connpassRepository.getConnpassResponse();
     }
 
+    /**
+     * 文字列を日付情報に変換して返すメソッド
+     * @param eventDate
+     * @return
+     */
     private Date getDate(String eventDate) {
         Date date = null;
         try {
@@ -94,6 +104,14 @@ public class ConnpassServise {
         return date;
     }
 
+    /**
+     * slackに投稿するテキストデータの作成を行うメソッド
+     * 更新された勉強会か，新しく作成された勉強会かで文言が変わる
+     * @param events
+     * @param headingText
+     * @return
+     * @throws JsonProcessingException
+     */
     private String createTextData(ConnpassResponse.Events events, String headingText) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
@@ -120,6 +138,11 @@ public class ConnpassServise {
         return json;
     }
 
+    /**
+     * slackへの投稿を行うメソッド
+     * @param payload
+     * @throws IOException
+     */
     private void postToSlack(String payload) throws IOException {
 
         CloseableHttpClient client = HttpClients.createDefault();
