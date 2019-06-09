@@ -37,6 +37,7 @@ public class ConnpassServise {
 
     /**
      * connpassから勉強会情報を取得してslackに投稿するメソッド
+     *
      * @return 取得した勉強会情報(絞り込み前)
      */
     public ConnpassResponse postConnpassInfo() {
@@ -68,16 +69,17 @@ public class ConnpassServise {
             try {
 
                 // 新しい勉強会情報か更新された勉強会情報かを判別
-                if (addedStudyGroupIds.containsKey(e.getEvent_id())
-                        && checkEventUpdatedTime(now, addedStudyGroupIds.get(e.getEvent_id()).get(0).getUpdatedAt())) {
+                if (addedStudyGroupIds.containsKey(e.getEvent_id())) {
 
-                    postToSlack(createTextData(e, "勉強会の情報が更新されたよ :two_hearts:"));
+                    if (checkEventUpdatedTime(now, addedStudyGroupIds.get(e.getEvent_id()).get(0).getUpdatedAt())) {
+                        postToSlack(createTextData(e, "勉強会の情報が更新されたよ :two_hearts:"));
 
-                    // 投稿されたイベントのupdated_timeを更新
-                    studyGroupRepository.save(StudyGroup.builder()
-                                                        .id(addedStudyGroupIds.get(e.getEvent_id()).get(0).getId())
-                                                        .sgId(e.getEvent_id())
-                                                        .build());
+                        // 投稿されたイベントのupdated_timeを更新
+                        studyGroupRepository.save(StudyGroup.builder()
+                                .id(addedStudyGroupIds.get(e.getEvent_id()).get(0).getId())
+                                .sgId(e.getEvent_id())
+                                .build());
+                    }
 
                 } else {
 
@@ -96,6 +98,7 @@ public class ConnpassServise {
 
     /**
      * 文字列を日付情報に変換して返すメソッド
+     *
      * @param eventDate
      * @return
      */
@@ -114,6 +117,7 @@ public class ConnpassServise {
     /**
      * イベントの更新時間を見て，二日以内に更新されていなければ真を返す．
      * 二日以内に更新されていたら偽を返すため，通知が行われない．
+     *
      * @param now
      * @param eventUpdatedTime
      * @return
@@ -125,7 +129,7 @@ public class ConnpassServise {
 
         calendar.add(Calendar.DAY_OF_WEEK, -2);
 
-        if( calendar.getTime().after(eventUpdatedTime) ) return true;
+        if (calendar.getTime().after(eventUpdatedTime)) return true;
 
         return false;
     }
@@ -133,6 +137,7 @@ public class ConnpassServise {
     /**
      * slackに投稿するテキストデータの作成を行うメソッド
      * 更新された勉強会か，新しく作成された勉強会かで文言が変わる
+     *
      * @param events
      * @param headingText
      * @return
@@ -145,7 +150,7 @@ public class ConnpassServise {
         String json = mapper.writeValueAsString(SlackPostObject.builder()
                 .channel("#bot_test")
                 .username("宇垣美里")
-                .text(  headingText
+                .text(headingText
                         + LINE_SEPARATOR
                         + "タイトル: " + events.getTitle()
                         + LINE_SEPARATOR
@@ -166,6 +171,7 @@ public class ConnpassServise {
 
     /**
      * slackへの投稿を行うメソッド
+     *
      * @param payload
      * @throws IOException
      */
