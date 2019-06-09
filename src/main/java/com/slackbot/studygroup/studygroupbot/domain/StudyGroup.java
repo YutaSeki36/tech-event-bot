@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "studygroup")
@@ -22,4 +23,8 @@ public class StudyGroup {
 
     @Column(name = "sg_id")
     private Integer sgId = 0;
+
+    @Column(name = "updated_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 }

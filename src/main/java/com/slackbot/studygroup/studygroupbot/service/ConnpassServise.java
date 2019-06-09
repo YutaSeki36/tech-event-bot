@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,21 +43,22 @@ public class ConnpassServise {
 
         List<ConnpassResponse.Events> events = new ArrayList<>();
 
+        List<StudyGroup> studyGroups = studyGroupRepository.findAll();
+
         // 既にslackに投稿された勉強会idを取得
-        List<Integer> addedStudygroupIds =
-                studyGroupRepository.findAll().stream()
-                        .map(e -> e.getSgId())
-                        .collect(Collectors.toList());
+        Map<Integer, List<StudyGroup>> addedStudyGroupIds =
+                studyGroups.stream()
+                        .collect(Collectors.groupingBy(StudyGroup::getSgId));
+
 
         Date now = new Date();
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
 
         // 現在より15分前を定義
-        calendar.add(Calendar.MINUTE, -10);
+        calendar.add(Calendar.MINUTE, -1000);
 
-        // streamで最新情報のみに絞り込み
+        // コンパスAPIで勉強会情報を取得して，streamで最新情報のみに絞り込む
         connpassRepository.getConnpassResponse().getEvents()
                 .stream()
                 .filter(e -> calendar.getTime().before(getDate(e.getUpdated_at())) && now.before(getDate(e.getStarted_at())))
@@ -70,9 +68,17 @@ public class ConnpassServise {
             try {
 
                 // 新しい勉強会情報か更新された勉強会情報かを判別
-                if (addedStudygroupIds.contains(e.getEvent_id())) {
+                if (addedStudyGroupIds.containsKey(e.getEvent_id())
+                        && checkEventUpdatedTime(now, addedStudyGroupIds.get(e.getEvent_id()).get(0).getUpdatedAt())) {
 
                     postToSlack(createTextData(e, "勉強会の情報が更新されたよ :two_hearts:"));
+
+                    // 投稿されたイベントのupdated_timeを更新
+                    studyGroupRepository.save(StudyGroup.builder()
+                                                        .id(addedStudyGroupIds.get(e.getEvent_id()).get(0).getId())
+                                                        .sgId(e.getEvent_id())
+                                                        .build());
+
                 } else {
 
                     StudyGroup studyGroup = StudyGroup.builder().sgId(e.getEvent_id()).build();
@@ -94,6 +100,7 @@ public class ConnpassServise {
      * @return
      */
     private Date getDate(String eventDate) {
+
         Date date = null;
         try {
             date = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.parse(eventDate);
@@ -102,6 +109,25 @@ public class ConnpassServise {
         }
 
         return date;
+    }
+
+    /**
+     * イベントの更新時間を見て，二日以内に更新されていなければ真を返す．
+     * 二日以内に更新されていたら偽を返すため，通知が行われない．
+     * @param now
+     * @param eventUpdatedTime
+     * @return
+     */
+    private boolean checkEventUpdatedTime(Date now, Date eventUpdatedTime) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+
+        calendar.add(Calendar.DAY_OF_WEEK, -2);
+
+        if( calendar.getTime().after(eventUpdatedTime) ) return true;
+
+        return false;
     }
 
     /**
@@ -117,7 +143,7 @@ public class ConnpassServise {
         ObjectMapper mapper = new ObjectMapper();
 
         String json = mapper.writeValueAsString(SlackPostObject.builder()
-                .channel("#event-info")
+                .channel("#bot_test")
                 .username("宇垣美里")
                 .text(  headingText
                         + LINE_SEPARATOR
