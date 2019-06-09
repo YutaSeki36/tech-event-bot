@@ -148,7 +148,7 @@ public class ConnpassServise {
         ObjectMapper mapper = new ObjectMapper();
 
         String json = mapper.writeValueAsString(SlackPostObject.builder()
-                .channel("#bot_test")
+                .channel("#event-info")
                 .username("宇垣美里")
                 .text(headingText
                         + LINE_SEPARATOR
