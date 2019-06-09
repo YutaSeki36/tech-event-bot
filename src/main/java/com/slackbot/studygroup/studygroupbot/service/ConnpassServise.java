@@ -57,7 +57,7 @@ public class ConnpassServise {
         calendar.setTime(now);
 
         // 現在より15分前を定義
-        calendar.add(Calendar.MINUTE, -1000);
+        calendar.add(Calendar.MINUTE, -10);
 
         // コンパスAPIで勉強会情報を取得して，streamで最新情報のみに絞り込む
         connpassRepository.getConnpassResponse().getEvents()
